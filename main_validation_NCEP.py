@@ -35,7 +35,7 @@ rea_selection = "ncep"
 rea_info = {
     "era": {'path':'../data/ERA5/*',
             'vars':['r', 'q']},
-    "ncep": {'path':'/Users/jana/Desktop/EOF/Klima_Data/Test/*',
+    "ncep": {'path':'/Users/jana/Desktop/EOF/Klima_Data/NCEP/*/*',
             'vars':['slp', 'rhum', 'shum']},
     "jra": {'path':'../data/JRA55/*/*.nc',
             'vars':['PRMSL_GDS0_MSL', 'RH_GDS0_ISBL', 'SPFH_GDS0_ISBL']},
@@ -73,6 +73,12 @@ if rea_selection == 'ncep':
     ds_rea['rhum'] = ds_rea['rhum'].squeeze(dim='level')
     ds_rea['shum'] = ds_rea['shum'].squeeze(dim='level')
     ds_rea = ds_rea.drop('level')
+    
+    #In some later files there is a variable time_bnds. Needs to be removed!!
+    try:
+        ds_rea = ds_rea.drop('time_bnds')
+    except:
+        pass
 
     print(ds_rea)
     
@@ -99,30 +105,37 @@ ds_rea = calc_normalized_anomalies(ds_rea)
 ds_rea_roll = ds_rea.rolling(time=21, center=True).construct('window_dim')
 
 # Loop over dayofyear   ---------------------------------------------------------------------------------------------------------
-for _, ds_test in ds_rea_roll.groupby("time.dayofyear"):
+#for _, ds_test in ds_rea_roll.groupby("time.dayofyear"):
+#
+#    # TODO
+#    ds_test = ds_test.rename({"time":"time_old"})
+#    #ds_test = ds_test.stack(time=('time_old', 'window_dim')).transpose('time_eof', 'lat', 'lon', 'nbnds')
+#    ds_test = ds_test.stack(time=('time_old', 'window_dim')).transpose('time', 'lat', 'lon')
+#    # Add attribute axis for EOF package to find new time dimension
+#    ds_test.coords['time'].attrs['axis'] = 'T'
+#
+#    # Rename time dimension to avoid conflict if pcs are computed
+#
+#    # Create an EOF solver to do the EOF analysis. Square-root of cosine of
+#    # latitude weights are applied before the computation of EOFs.
+#    # coslat = np.cos(np.deg2rad(z_djf.coords['latitude'].values)).clip(0., 1.)
+#    # wgts = np.sqrt(coslat)[..., np.newaxis]
+#    #solver = Eof(ds_test.pres.dropna('time'))
+#    
+#    SLP = ds_test.slp.dropna('time').values
+#    RHUM = ds_test.rhum.dropna('time').values
+#    SHUM = ds_test.shum.dropna('time').values
+#    
+#    msolver = MultivariateEof([SLP, RHUM, SHUM])
+#    eofs_slp, eofs_rhum, eofs_shum = msolver.eofs(neofs=5)
+#    pc = msolver.pcs(npcs=5)
+#
+#
+#    break
 
-    # TODO
-    ds_test = ds_test.rename({"time":"time_old"})
-    #ds_test = ds_test.stack(time=('time_old', 'window_dim')).transpose('time_eof', 'lat', 'lon', 'nbnds')
-    ds_test = ds_test.stack(time=('time_old', 'window_dim')).transpose('time', 'lat', 'lon')
-    # Add attribute axis for EOF package to find new time dimension
-    ds_test.coords['time'].attrs['axis'] = 'T'
+# Calculate normalized anomalies and construct rolled dimension
+ds_rea = calc_normalized_anomalies(ds_rea)
 
-    # Rename time dimension to avoid conflict if pcs are computed
+print(ds_rea)
 
-    # Create an EOF solver to do the EOF analysis. Square-root of cosine of
-    # latitude weights are applied before the computation of EOFs.
-    # coslat = np.cos(np.deg2rad(z_djf.coords['latitude'].values)).clip(0., 1.)
-    # wgts = np.sqrt(coslat)[..., np.newaxis]
-    #solver = Eof(ds_test.pres.dropna('time'))
-    
-    SLP = ds_test.slp.dropna('time').values
-    RHUM = ds_test.rhum.dropna('time').values
-    SHUM = ds_test.shum.dropna('time').values
-    
-    msolver = MultivariateEof([SLP, RHUM, SHUM])
-    eofs_slp, eofs_rhum, eofs_shum = msolver.eofs(neofs=5)
-    pc = msolver.pcs(npcs=5)
-
-
-    break
+ds_rea.to_netcdf(path="normalized_animaliies_NCEP.nc")
