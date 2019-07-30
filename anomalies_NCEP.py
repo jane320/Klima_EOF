@@ -50,4 +50,4 @@ ds_rea = calc_normalized_anomalies(ds_rea)
 print(ds_rea)
 
 # Save anomalies
-ds_rea.to_netcdf(path="normalized_animaliies_NCEP.nc")
+ds_rea.to_netcdf(path="normalized_anomalies_NCEP.nc")
