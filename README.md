@@ -10,7 +10,7 @@ For EOFs use analog_method_NCEP.py
 The program calculates mutivariate EOFs as well as the analogous dates for each date of the dataset. Furthermore it does 5 analogues for each day of the predifined time series. 
 
 # Validation 
-For validation, the Spartacus Dataset is used. corr_coef_NCEP.py determines the correlation coefficient and RMSE for one specific year of the dataset and the wanted variable. The program plot_validation_NCEP.py creates several plots for the previously saved files regarding correlation coefficient and RMSE.
+For validation, the Spartacus Dataset is used. corr_coef_NCEP.py determines the correlation coefficient and RMSE for one specific year of the dataset and the wanted variables. The program plot_validation_NCEP.py creates several plots for the previously saved files regarding correlation coefficient and RMSE.
 
 You can find some more precise description of the programs as well as the validation of the year 1979 in Projektarbeit_Klimamodellierung.pdf. 
 
